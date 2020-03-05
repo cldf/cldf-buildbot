@@ -1,25 +1,15 @@
-from github import Github
+import json
+import pathlib
 
 from buildbot.plugins import *
 
-EXCLUDE = {
-    'lexibank': [
-        'pylexibank',
-        'lexibank',
-        'phylogenetics-data-management-tutorial',
-        'template',
-    ],
-    'cldf-datasets': [
-        'cldf-datasets',
-    ]
-}
-
 
 class Dataset:
-    def __init__(self, org, url):
-        self.url = url
+    def __init__(self, org, clone_url, cldf_metadata):
+        self.url = clone_url
         self.org = org
-        self.name = url.split("/")[-1].replace(".git", "")
+        self.name = self.url.split("/")[-1].replace(".git", "")
+        self.cldf_metadata = cldf_metadata
 
     @property
     def id(self):
@@ -67,11 +57,10 @@ class Dataset:
         #)
 
         # validate
-        mdname = 'cldf-metadata.json' if self.org == 'lexibank' else ''
-        if mdname:
+        for mdpath in self.cldf_metadata:
             factory.addStep(
                 steps.ShellCommand(
-                    command=["cldf", "validate", "cldf/{0}".format(mdname)],
+                    command=["cldf", "validate", mdpath],
                     workdir="build",
                     env={"PYTHONPATH": "."},
                     name="validate"
@@ -99,18 +88,11 @@ class Dataset:
         return factory
 
 
-def iter_datasets():
-    gh = Github()
-    for org, exclude in EXCLUDE.items():
-        for repo in gh.get_organization(org).get_repos():
-            dataset = Dataset(org, repo.clone_url)
-            if dataset.name not in exclude:
-                # FIXME: for dev
-                if dataset.name in ['birchallchapacuran', 'dryerorder']:
-                    yield Dataset(org, repo.clone_url)
+with pathlib.Path(__file__).parent.joinpath('reposlist.json').open(encoding='utf8') as fp:
+    DATASETS = [Dataset(*args) for args in json.load(fp)]
 
-
-DATASETS = sorted(iter_datasets(), key=lambda ds: (ds.org, ds.name))
+# FIXME: limit for development:
+DATASETS = [ds for ds in DATASETS if ds.name in ['dryerorder', 'birchallchapacuran']]
 
 
 # This is the dictionary that the buildmaster pays attention to. We also use
