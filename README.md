@@ -10,6 +10,9 @@
 python -m venv env
 source ./env/bin/activate
 git clone https://github.com/cldf/cldf-buildbot.git
+git clone https://github.com/glottolog/glottolog.git
+git clone https://github.com/concepticon/concepticon-data.git
+git clone https://github.com/cldf-clts/clts.git
 pip install -r cldf-buildbot/requirements.txt
 ```
 

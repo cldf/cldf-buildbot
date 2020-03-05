@@ -19,72 +19,52 @@ class Dataset:
     def schedulers(self):
         return [schedulers.ForceScheduler(name="%s-force" % self.id, builderNames=[self.id])]
 
+    @staticmethod
+    def shell_command(name, cmd):
+        return steps.ShellCommand(command=cmd, workdir="build", env={"PYTHONPATH": "."}, name=name)
+
     @property
     def builder(self):
         factory = util.BuildFactory()
-        # check out the source
         factory.addStep(steps.Git(repourl=self.url, mode='full', method="fresh"))
-
-        # install and upgrade
-        factory.addStep(
-            steps.ShellCommand(
-                command=["pip", "install", "--upgrade", "."],
-                workdir="build",
-                env={"PYTHONPATH": "."},
-                name="install dataset"
-            )
-        )
-        factory.addStep(
-            steps.ShellCommand(
-                command=["pip", "install", "--upgrade", "pytest", "pytest-cldf"],
-                workdir="build",
-                env={"PYTHONPATH": "."},
-                name="install tools"
-            )
-        )
-
-        # make cldf
-        cmd = 'lexibank.makecldf' if self.org == 'lexibank' else 'makecldf'
-        # TODO.. need glottolog and concepticon
-        # cldfbench lexibank.makecldf --glottolog-version v4.1 --concepticon-version v2.2.1 "${1}"
-        #factory.addStep(
-        #    steps.ShellCommand(
-        #        command=["cldfbench", "lexibank.makecldf", "cldf/cldf-metadata.json"],
-        #        workdir="build",
-        #        env={"PYTHONPATH": "."},
-        #        name="validate"
-        #    )
-        #)
+        factory.addStep(self.shell_command(
+            'install dataset',
+            ["pip", "install", "--upgrade", "."]))
+        factory.addStep(self.shell_command(
+            'install tools',
+            ["pip", "install", "--upgrade", "pytest", "pytest-cldf"]))
+        catalogs = [
+            '--glottolog',
+            str(pathlib.Path(__file__).parent.parent.joinpath('glottolog').resolve()),
+        ]
+        if self.org == 'lexibank':
+            catalogs.extend([
+                '--concepticon',
+                str(pathlib.Path(__file__).parent.parent.joinpath('concepticon-data').resolve()),
+                '--clts',
+                str(pathlib.Path(__file__).parent.parent.joinpath('clts').resolve()),
+            ])
+        factory.addStep(self.shell_command(
+            'makecldf',
+            [
+                "cldfbench",
+                ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
+                self.name,
+            ] + catalogs))
 
         # validate
         for mdpath in self.cldf_metadata:
-            factory.addStep(
-                steps.ShellCommand(
-                    command=["cldf", "validate", mdpath],
-                    workdir="build",
-                    env={"PYTHONPATH": "."},
-                    name="validate"
-                )
-            )
+            factory.addStep(self.shell_command(
+                'validate',
+                ["cldf", "validate", mdpath]))
         # run tests
-        factory.addStep(
-            steps.ShellCommand(
-                command=["pytest"], workdir="build",
-                env={"PYTHONPATH": "."},
-                name="pytest"
-            )
-        )
-
-        if self.org == 'lexibank':
-            # run checkss
-            factory.addStep(
-                steps.ShellCommand(
-                    command=["cldfbench", "--log-level", "WARN", "lexibank.check", self.name],
-                    workdir="build",
-                    env={"PYTHONPATH": "."},
-                    name="lexicheck"
-                )
-            )
+        factory.addStep(self.shell_command(
+            'pytest',
+            ['pytest']))
+        cmd_prefix = 'lexibank.' if self.org == 'lexibank' else ''
+        factory.addStep(self.shell_command(
+            'check',
+            ["cldfbench", "--log-level", "WARN", cmd_prefix + "check", self.name]))
         return factory
 
 
@@ -165,7 +145,7 @@ c['services'] = []
 # home pages (linked to the 'titleURL').
 
 c['title'] = "CLDF Buildbot"
-c['titleURL'] = "https://lexibot.github.io/"
+c['titleURL'] = "https://github.com/cldf/cldf-buildbot"
 
 # the 'buildbotURL' string should point to the location where the buildbot's
 # internal web server is visible. This typically uses the port number set in
