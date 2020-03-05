@@ -1,0 +1,4 @@
+buildbot[bundle]
+buildbot-worker
+pygithub
+
