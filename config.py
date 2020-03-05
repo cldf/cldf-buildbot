@@ -1,5 +1,6 @@
 import json
 import pathlib
+import platform
 
 from buildbot.plugins import *
 
@@ -71,8 +72,8 @@ class Dataset:
 with pathlib.Path(__file__).parent.joinpath('reposlist.json').open(encoding='utf8') as fp:
     DATASETS = [Dataset(*args) for args in json.load(fp)]
 
-# FIXME: limit for development:
-DATASETS = [ds for ds in DATASETS if ds.name in ['dryerorder', 'birchallchapacuran']]
+if platform.node() == 'dlt4803010l':
+    DATASETS = [ds for ds in DATASETS if ds.name in ['dryerorder', 'birchallchapacuran']]
 
 
 # This is the dictionary that the buildmaster pays attention to. We also use
