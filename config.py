@@ -3,6 +3,7 @@ import pathlib
 import platform
 
 from buildbot.plugins import *
+from buildbot.process import results
 
 
 class Dataset:
@@ -21,8 +22,14 @@ class Dataset:
         return [schedulers.ForceScheduler(name="%s-force" % self.id, builderNames=[self.id])]
 
     @staticmethod
-    def shell_command(name, cmd):
-        return steps.ShellCommand(command=cmd, workdir="build", env={"PYTHONPATH": "."}, name=name)
+    def shell_command(name, cmd, **kw):
+        return steps.ShellCommand(
+            command=cmd,
+            workdir="build",
+            env={"PYTHONPATH": "."},
+            logEnviron=False,
+            name=name,
+            **kw)
 
     @property
     def builder(self):
@@ -65,7 +72,10 @@ class Dataset:
         cmd_prefix = 'lexibank.' if self.org == 'lexibank' else ''
         factory.addStep(self.shell_command(
             'check',
-            ["cldfbench", "--log-level", "WARN", cmd_prefix + "check", self.name]))
+            ["cldfbench", "--log-level", "WARN", cmd_prefix + "check", self.name],
+            decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+            warnOnWarnings=True,
+        ))
         return factory
 
 
@@ -73,7 +83,10 @@ with pathlib.Path(__file__).parent.joinpath('reposlist.json').open(encoding='utf
     DATASETS = [Dataset(*args) for args in json.load(fp)]
 
 if platform.node() == 'dlt4803010l':
-    DATASETS = [ds for ds in DATASETS if ds.name in ['dryerorder', 'birchallchapacuran']]
+    DATASETS = [ds for ds in DATASETS if ds.name in [
+        'dryerorder',
+        'chenhmongmien',
+        'birchallchapacuran']]
 
 
 # This is the dictionary that the buildmaster pays attention to. We also use
@@ -158,7 +171,8 @@ c['buildbotURL'] = "http://localhost:8010/"
 # minimalistic config to activate new web UI
 c['www'] = dict(
     port=8010,
-    plugins=dict(waterfall_view={}, console_view={}, grid_view={})
+    plugins=dict(waterfall_view={}, console_view={}, grid_view={}),
+    ui_default_config={'Builders.buildFetchLimit': 200},
 )
 
 ####### DB URL

@@ -1,4 +1,5 @@
 buildbot[bundle]
 buildbot-worker
 pygithub
+pylexibank>=2.2.1
 
