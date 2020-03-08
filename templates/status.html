@@ -1,29 +1,33 @@
-<div class="container mydashboard">
+<div class="container dashboard">
     <style>
-        .mydashboard table th {
-            font-size: 24pt;
+        .dashboard table {
+            width: auto !important;
+        }
+        .dashboard table td {
+            font-size: larger;
+            vertical-align: bottom;
         }
     </style>
     <h3>
         <a href="https://github.com/{{org}}">{{org}} datasets</a>
     </h3>
-    <table class="table" width="100%">
+    <table class="table">
         <tbody>
         {% for builder in builders | sort(attribute='name') %}
         <tr>
-            <td width="33%">
+            <td>
                 <a href="#/builders/{{builder.builder_id}}">
                     {{ builder.name }}
                 </a>
             </td>
-            <td width="33%">
-                <a href="#/builders/{{builder.builder_id}}">
-                    <img src="/badges/{{builder.builder_name}}.svg">
+            <td class="icon">
+                <a href="{{ builder.github_url }}">
+                    <i style="font-size: 130%" class="fa fa-github-square"></i>
                 </a>
             </td>
-            <td width="33%">
-                <a href="{{ builder.github_url }}">
-                    GitHub
+            <td class="icon">
+                <a href="#/builders/{{builder.builder_id}}">
+                    <img style="margin-top: -7px" src="/badges/{{builder.builder_name}}.svg">
                 </a>
             </td>
         </tr>
