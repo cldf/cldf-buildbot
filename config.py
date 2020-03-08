@@ -1,17 +1,24 @@
+import os
 import json
 import pathlib
 import platform
+import functools
+import collections
+
+from flask import Flask
+from flask import render_template
 
 from buildbot.plugins import *
 from buildbot.process import results
 
 
 class Dataset:
-    def __init__(self, org, clone_url, cldf_metadata):
+    def __init__(self, org, clone_url, cldf_metadata, cldfbench_curator):
         self.url = clone_url
         self.org = org
         self.name = self.url.split("/")[-1].replace(".git", "")
         self.cldf_metadata = cldf_metadata
+        self.cldfbench_curator = cldfbench_curator
 
     @property
     def id(self):
@@ -33,49 +40,74 @@ class Dataset:
 
     @property
     def builder(self):
+        """
+        The build process for a dataset.
+        """
         factory = util.BuildFactory()
+
         factory.addStep(steps.Git(repourl=self.url, mode='full', method="fresh"))
-        factory.addStep(self.shell_command(
-            'install dataset',
-            ["pip", "install", "--upgrade", "."]))
-        factory.addStep(self.shell_command(
-            'install tools',
-            ["pip", "install", "--upgrade", "pytest", "pytest-cldf"]))
-        catalogs = [
-            '--glottolog',
-            str(pathlib.Path(__file__).parent.parent.joinpath('glottolog').resolve()),
-        ]
-        if self.org == 'lexibank':
-            catalogs.extend([
-                '--concepticon',
-                str(pathlib.Path(__file__).parent.parent.joinpath('concepticon-data').resolve()),
-                '--clts',
-                str(pathlib.Path(__file__).parent.parent.joinpath('clts').resolve()),
-            ])
-        factory.addStep(self.shell_command(
-            'makecldf',
-            [
-                "cldfbench",
-                ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
-                self.name,
-            ] + catalogs))
+
+        if self.cldfbench_curator:  # An installable dataset!
+            factory.addStep(self.shell_command(
+                'install dataset',
+                ["pip", "install", "--upgrade", "."]))
+            factory.addStep(self.shell_command(
+                'install tools',
+                ["pip", "install", "--upgrade", "pytest", "pytest-cldf"]))
+
+            catalogs = [
+                '--glottolog',
+                str(pathlib.Path(__file__).parent.parent.joinpath('glottolog').resolve()),
+            ]
+            if self.cldfbench_curator == 'lexibank':
+                # lexibank datasets have their own makecldf command, with additional requirements:
+                catalogs.extend([
+                    '--concepticon',
+                    str(pathlib.Path(__file__).parent.parent.joinpath('concepticon-data').resolve()),
+                    '--clts',
+                    str(pathlib.Path(__file__).parent.parent.joinpath('clts').resolve()),
+                ])
+            factory.addStep(self.shell_command(
+                'makecldf',
+                [
+                    "cldfbench",
+                    ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
+                    self.name,
+                ] + catalogs))
+            # run tests
+            factory.addStep(self.shell_command(
+                'pytest',
+                ['pytest']))
 
         # validate
         for mdpath in self.cldf_metadata:
             factory.addStep(self.shell_command(
                 'validate',
                 ["cldf", "validate", mdpath]))
-        # run tests
-        factory.addStep(self.shell_command(
-            'pytest',
-            ['pytest']))
-        cmd_prefix = 'lexibank.' if self.org == 'lexibank' else ''
-        factory.addStep(self.shell_command(
-            'check',
-            ["cldfbench", "--log-level", "WARN", cmd_prefix + "check", self.name],
-            decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
-            warnOnWarnings=True,
-        ))
+
+        # run checks:
+        for mdpath in self.cldf_metadata:
+            factory.addStep(self.shell_command(
+                'cldf check',
+                ["cldf", "check", mdpath],
+                decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                warnOnWarnings=True,
+            ))
+
+        if self.cldfbench_curator:
+            factory.addStep(self.shell_command(
+                'cldfbench check',
+                ["cldfbench", "--log-level", "WARN", "check", self.name],
+                decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                warnOnWarnings=True,
+            ))
+            # if self.cldfbench_curator == 'lexibank':
+            #    factory.addStep(self.shell_command(
+            #        'lexibank check',
+            #        ["cldfbench", "--log-level", "WARN", "lexibank.check", self.name],
+            #        decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+            #        warnOnWarnings=True,
+            #    ))
         return factory
 
 
@@ -86,8 +118,8 @@ if platform.node() == 'dlt4803010l':
     DATASETS = [ds for ds in DATASETS if ds.name in [
         'dryerorder',
         'chenhmongmien',
+        'daakaka',
         'birchallchapacuran']]
-
 
 # This is the dictionary that the buildmaster pays attention to. We also use
 # a shorter alias to save typing.
@@ -124,13 +156,19 @@ c['change_source'] = []
 ####### SCHEDULERS
 
 # Configure the Schedulers, which decide how to react to incoming changes.
-c['schedulers'] = [
-    schedulers.Triggerable(name="release", builderNames=[ds.id for ds in DATASETS]),
-    schedulers.ForceScheduler(name="release-force", builderNames=['release'])
-]
+c['schedulers'] = []
+for org in set(ds.org for ds in DATASETS):
+    c['schedulers'].extend([
+        schedulers.Triggerable(
+            name="release-{0}".format(org),
+            builderNames=[ds.id for ds in DATASETS if ds.org == org]),
+        schedulers.ForceScheduler(
+            name="release-{0}-force".format(org),
+            builderNames=['a-release-{0}'.format(org)])
+    ])
+
 for ds in DATASETS:
     c['schedulers'].extend(ds.schedulers)
-
 
 ####### BUILDERS
 
@@ -138,9 +176,16 @@ for ds in DATASETS:
 # what steps, and which workers can execute them.  Note that any particular build will
 # only take place on one worker.
 
-release = util.BuildFactory()
-release.addStep(steps.Trigger(schedulerNames=['release'], waitForFinish=False))
-c['builders'] = [util.BuilderConfig(name='release', workernames=["worker"], factory=release)]
+c['builders'] = []
+for org in set(ds.org for ds in DATASETS):
+    release = util.BuildFactory()
+    release.addStep(steps.Trigger(
+        schedulerNames=['release-{0}'.format(org)],
+        waitForFinish=False))
+    c['builders'].append(util.BuilderConfig(
+        name='a-release-{0}'.format(org),
+        workernames=["worker"],
+        factory=release))
 
 for ds in DATASETS:
     c['builders'].append(util.BuilderConfig(name=ds.id, workernames=["worker"], factory=ds.builder))
@@ -168,13 +213,53 @@ c['titleURL'] = "https://github.com/cldf/cldf-buildbot"
 
 c['buildbotURL'] = "http://localhost:8010/"
 
+
+def status_view(org, app):
+    class UIDataset:
+        def __init__(self, builder):
+            parts = builder['name'].split('-')
+            self.builder_id = builder['builderid']
+            self.builder_name = builder['name']
+            self.org = '-'.join(parts[:-1])
+            self.name = parts[-1]
+            self.github_url = 'https://github.com/{0.org}/{0.name}'.format(self)
+
+    builders = []
+    for builder in app.buildbot_api.dataGet("/builders"):
+        if builder['name'].startswith('release'):
+            continue
+        ds = UIDataset(builder)
+        if ds.org == org:
+            builders.append(ds)
+    return render_template('status.html', builders=builders, org=org)
+
+
+dashboards = collections.OrderedDict()
+for org in set(ds.org for ds in DATASETS):
+    dashboards[org] = Flask(org, root_path=os.path.dirname(__file__))
+    dashboards[org].config['TEMPLATES_AUTO_RELOAD'] = True
+    dashboards[org].add_url_rule(
+        '/index.html', org, functools.partial(status_view, org, dashboards[org]))
+
+
 # minimalistic config to activate new web UI
 c['www'] = dict(
     port=8010,
-    plugins=dict(waterfall_view={}, console_view={}, grid_view={}),
-    ui_default_config={'Builders.buildFetchLimit': 200},
+    plugins=dict(
+        badges={},
+        wsgi_dashboards=[  # This is a list of dashboards, you can create several
+            {
+                'name': '{0}-status'.format(org),
+                'caption': '{0} Status'.format(org),
+                'app': app,
+                'order': 1,
+                'icon': 'book' if org == 'dictionaria' else (
+                    'clipboard' if org == 'lexibank' else 'database')
+            }
+            for org, app in dashboards.items()
+        ]
+    ),
 )
-
 ####### DB URL
 
 c['db'] = {

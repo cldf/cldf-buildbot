@@ -6,12 +6,23 @@ Usage:
 
 We may want to replace this with or call this from a fab task.
 """
+import re
 import json
+import base64
 import pathlib
 
 from github import Github, GithubException
 
-ORGS = ['lexibank', 'cldf-datasets']
+ORGS = ['lexibank', 'cldf-datasets', 'dictionaria']
+
+
+def cldfbench_curated(repo):
+    curator_pattern = re.compile(r"""["'](?P<curator>lexibank|cldfbench)\.dataset["']""")
+    for f in repo.get_contents('.'):
+        if f.name == 'setup.py':
+            match = curator_pattern.search(base64.b64decode(f.content).decode('utf8'))
+            if match:
+                return match.group('curator')
 
 
 def iter_repos(gh):
@@ -23,7 +34,9 @@ def iter_repos(gh):
                 yield (
                     org,
                     repo.clone_url,
-                    [f.path for f in repo.get_contents('cldf') if f.name.endswith('metadata.json')])
+                    [f.path for f in repo.get_contents('cldf') if f.name.endswith('metadata.json')],
+                    cldfbench_curated(repo)
+                )
             except GithubException:
                 continue
 

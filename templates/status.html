@@ -1,0 +1,33 @@
+<div class="container mydashboard">
+    <style>
+        .mydashboard table th {
+            font-size: 24pt;
+        }
+    </style>
+    <h3>
+        <a href="https://github.com/{{org}}">{{org}} datasets</a>
+    </h3>
+    <table class="table" width="100%">
+        <tbody>
+        {% for builder in builders | sort(attribute='name') %}
+        <tr>
+            <td width="33%">
+                <a href="#/builders/{{builder.builder_id}}">
+                    {{ builder.name }}
+                </a>
+            </td>
+            <td width="33%">
+                <a href="#/builders/{{builder.builder_id}}">
+                    <img src="/badges/{{builder.builder_name}}.svg">
+                </a>
+            </td>
+            <td width="33%">
+                <a href="{{ builder.github_url }}">
+                    GitHub
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
