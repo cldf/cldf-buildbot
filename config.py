@@ -61,6 +61,11 @@ class Dataset:
             # need shell script:
             #
             factory.addStep(self.shell_command(
+                'install wheel',
+                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "wheel"],
+                haltOnFailure=True,
+            ))
+            factory.addStep(self.shell_command(
                 'install dataset',
                 [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "--upgrade", "."],
                 haltOnFailure=True,
