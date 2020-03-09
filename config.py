@@ -1,4 +1,3 @@
-import os
 import json
 import pathlib
 import platform
@@ -11,7 +10,7 @@ from flask import render_template
 from buildbot.plugins import *
 from buildbot.process import results
 
-from . import settings
+import settings
 
 
 class Dataset:
@@ -63,10 +62,10 @@ class Dataset:
             #
             factory.addStep(self.shell_command(
                 'install dataset',
-                [self.venv_cmd("pip"), "install", "--upgrade", "."]))
+                [self.venv_cmd("pip"), '--cache-dir', '.cache', "install", "--upgrade", "."]))
             factory.addStep(self.shell_command(
                 'install tools',
-                [self.venv_cmd("pip"), "install", "--upgrade", "pytest", "pytest-cldf"]))
+                [self.venv_cmd("pip"), '--cache-dir', '.cache', "install", "--upgrade", "pytest", "pytest-cldf"]))
 
             catalogs = [
                 '--glottolog',
