@@ -11,6 +11,8 @@ from flask import render_template
 from buildbot.plugins import *
 from buildbot.process import results
 
+from . import settings
+
 
 class Dataset:
     def __init__(self, org, clone_url, cldf_metadata, cldfbench_curator):
@@ -211,7 +213,7 @@ c['titleURL'] = "https://github.com/cldf/cldf-buildbot"
 # the 'www' entry below, but with an externally-visible host name which the
 # buildbot cannot figure out without some help.
 
-c['buildbotURL'] = "http://localhost:8010/"
+c['buildbotURL'] = "http://{0}:8010/".format(settings.HOST)
 
 
 def status_view(org, app):
@@ -236,7 +238,9 @@ def status_view(org, app):
 
 dashboards = collections.OrderedDict()
 for org in set(ds.org for ds in DATASETS):
-    dashboards[org] = Flask(org, root_path=str(pathlib.Path(__file__).parent.joinpath('..', 'cldf-buildbot').resolve()))
+    dashboards[org] = Flask(
+        org,
+        template_folder=str(pathlib.Path(__file__).parent.joinpath('..', 'cldf-buildbot', 'templates').resolve()))
     dashboards[org].config['TEMPLATES_AUTO_RELOAD'] = True
     dashboards[org].add_url_rule(
         '/index.html', org, functools.partial(status_view, org, dashboards[org]))
