@@ -40,7 +40,7 @@ class Dataset:
             **kw)
 
     def venv_cmd(self, cmd):
-        return '{0}/bin/{1}'.format(self.id, cmd)
+        return './{0}/bin/{1}'.format(self.id, cmd)
 
     @property
     def builder(self):
@@ -62,11 +62,14 @@ class Dataset:
             #
             factory.addStep(self.shell_command(
                 'install dataset',
-                [self.venv_cmd("pip"), '--cache-dir', '.cache', "install", "--upgrade", "."]))
+                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "--upgrade", "."],
+                haltOnFailure=True,
+            ))
             factory.addStep(self.shell_command(
                 'install tools',
-                [self.venv_cmd("pip"), '--cache-dir', '.cache', "install", "--upgrade", "pytest", "pytest-cldf"]))
-
+                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "--upgrade", "pytest", "pytest-cldf"],
+                haltOnFailure = True,
+            ))
             catalogs = [
                 '--glottolog',
                 str(pathlib.Path(__file__).parent.parent.joinpath('glottolog').resolve()),
