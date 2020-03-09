@@ -2,8 +2,8 @@ buildbot[bundle]
 buildbot-worker
 buildbot-badges
 buildbot_wsgi_dashboards
+flask
 pygithub
 pycldf>=1.14.1
 cldfbench>=1.1.0
 pylexibank>=2.2.1
-
