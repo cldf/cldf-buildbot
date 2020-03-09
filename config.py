@@ -236,7 +236,7 @@ def status_view(org, app):
 
 dashboards = collections.OrderedDict()
 for org in set(ds.org for ds in DATASETS):
-    dashboards[org] = Flask(org, root_path=os.path.dirname(__file__))
+    dashboards[org] = Flask(org, root_path=os.path.join('..', 'cldf-datasets', os.path.dirname(__file__)))
     dashboards[org].config['TEMPLATES_AUTO_RELOAD'] = True
     dashboards[org].add_url_rule(
         '/index.html', org, functools.partial(status_view, org, dashboards[org]))
