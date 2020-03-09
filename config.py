@@ -40,6 +40,9 @@ class Dataset:
             name=name,
             **kw)
 
+    def venv_cmd(self, cmd):
+        return '{0}/bin/{1}'.format(self.id, cmd)
+
     @property
     def builder(self):
         """
@@ -49,13 +52,21 @@ class Dataset:
 
         factory.addStep(steps.Git(repourl=self.url, mode='full', method="fresh"))
 
+        factory.addStep(self.shell_command(
+            'virtualenv',
+            ['python3', '-m', 'venv', self.id]
+        ))
+
         if self.cldfbench_curator:  # An installable dataset!
+            #
+            # need shell script:
+            #
             factory.addStep(self.shell_command(
                 'install dataset',
-                ["pip", "install", "--upgrade", "."]))
+                [self.venv_cmd("pip"), "install", "--upgrade", "."]))
             factory.addStep(self.shell_command(
                 'install tools',
-                ["pip", "install", "--upgrade", "pytest", "pytest-cldf"]))
+                [self.venv_cmd("pip"), "install", "--upgrade", "pytest", "pytest-cldf"]))
 
             catalogs = [
                 '--glottolog',
@@ -72,7 +83,7 @@ class Dataset:
             factory.addStep(self.shell_command(
                 'makecldf',
                 [
-                    "cldfbench",
+                    self.venv_cmd("cldfbench"),
                     ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
                     self.name,
                 ] + catalogs))
@@ -85,13 +96,13 @@ class Dataset:
         for mdpath in self.cldf_metadata:
             factory.addStep(self.shell_command(
                 'validate',
-                ["cldf", "validate", mdpath]))
+                [self.venv_cmd("cldf"), "validate", mdpath]))
 
         # run checks:
         for mdpath in self.cldf_metadata:
             factory.addStep(self.shell_command(
                 'cldf check',
-                ["cldf", "check", mdpath],
+                [self.venv_cmd("cldf"), "check", mdpath],
                 decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                 warnOnWarnings=True,
             ))
@@ -99,7 +110,7 @@ class Dataset:
         if self.cldfbench_curator:
             factory.addStep(self.shell_command(
                 'cldfbench check',
-                ["cldfbench", "--log-level", "WARN", "check", self.name],
+                [self.venv_cmd("cldfbench"), "--log-level", "WARN", "check", self.name],
                 decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                 warnOnWarnings=True,
             ))
