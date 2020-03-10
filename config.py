@@ -26,13 +26,17 @@ class Dataset:
         return '{0.org}-{0.name}'.format(self)
 
     @property
+    def entry_point(self):
+        return '{}.dataset'.format(
+            'lexibank' if self.cldfbench_curator == 'lexibank' else 'cldfbench')
+
+    @property
     def schedulers(self):
         return [schedulers.ForceScheduler(name="%s-force" % self.id, builderNames=[self.id])]
 
-    @staticmethod
-    def shell_command(name, cmd, **kw):
+    def shell_command(self, name, cmd, **kw):
         return steps.ShellCommand(
-            command=cmd,
+            command=[self.venv_cmd(cmd[0])] + cmd[1:],
             workdir="build",
             env={"PYTHONPATH": "."},
             logEnviron=False,
@@ -51,28 +55,33 @@ class Dataset:
 
         factory.addStep(steps.Git(repourl=self.url, mode='full', method="fresh"))
 
+        factory.addStep(steps.ShellCommand(
+            name='virtualenv',
+            command=['python3', '-m', 'venv', self.id],
+            workdir="build",
+            env={"PYTHONPATH": "."},
+            logEnviron=False,
+        ))
+        factory.addStep(self.shell_command(  # Make sure built and install tools are up-to-date!
+            'upgrade tools',
+            ["pip", '--cache-dir', '../.cache', "install", "--upgrade", "pip", "wheel", "setuptools"],
+            haltOnFailure=True,
+        ))
         factory.addStep(self.shell_command(
-            'virtualenv',
-            ['python3', '-m', 'venv', self.id]
+            'install pycldf',
+            ["pip", '--cache-dir', '../.cache', "install", "wheel", "pycldf"],
+            haltOnFailure=True,
         ))
 
         if self.cldfbench_curator:  # An installable dataset!
-            #
-            # need shell script:
-            #
-            factory.addStep(self.shell_command(
-                'install wheel',
-                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "wheel"],
-                haltOnFailure=True,
-            ))
             factory.addStep(self.shell_command(
                 'install dataset',
-                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "--upgrade", "."],
+                ["pip", '--cache-dir', '../.cache', "install", "--upgrade", "."],
                 haltOnFailure=True,
             ))
             factory.addStep(self.shell_command(
                 'install tools',
-                [self.venv_cmd("pip"), '--cache-dir', '../.cache', "install", "--upgrade", "pytest", "pytest-cldf"],
+                ["pip", '--cache-dir', '../.cache', "install", "--upgrade", "pytest", "pytest-cldf"],
                 haltOnFailure = True,
             ))
             catalogs = [
@@ -90,7 +99,7 @@ class Dataset:
             factory.addStep(self.shell_command(
                 'makecldf',
                 [
-                    self.venv_cmd("cldfbench"),
+                    "cldfbench",
                     ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
                     self.name,
                 ] + catalogs))
@@ -103,13 +112,13 @@ class Dataset:
         for mdpath in self.cldf_metadata:
             factory.addStep(self.shell_command(
                 'validate',
-                [self.venv_cmd("cldf"), "validate", mdpath]))
+                ["cldf", "validate", mdpath]))
 
         # run checks:
         for mdpath in self.cldf_metadata:
             factory.addStep(self.shell_command(
                 'cldf check',
-                [self.venv_cmd("cldf"), "check", mdpath],
+                ["cldf", "check", mdpath],
                 decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                 warnOnWarnings=True,
             ))
@@ -117,7 +126,15 @@ class Dataset:
         if self.cldfbench_curator:
             factory.addStep(self.shell_command(
                 'cldfbench check',
-                [self.venv_cmd("cldfbench"), "--log-level", "WARN", "check", self.name],
+                [
+                    "cldfbench",
+                    "--log-level",
+                    "WARN",
+                    "check",
+                    self.name,
+                    '--entry-point',
+                    self.entry_point,
+                ],
                 decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                 warnOnWarnings=True,
             ))
@@ -128,6 +145,18 @@ class Dataset:
             #        decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
             #        warnOnWarnings=True,
             #    ))
+            factory.addStep(self.shell_command(
+                'cldfbench diff',
+                [
+                    "cldfbench",
+                    "diff",
+                    self.name,
+                    '--entry-point',
+                    self.entry_point,
+                ],
+                decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                warnOnWarnings=True,
+            ))
         return factory
 
 
