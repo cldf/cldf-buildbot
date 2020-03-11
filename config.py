@@ -237,7 +237,10 @@ for org in set(ds.org for ds in DATASETS):
         factory=release))
 
 for ds in DATASETS:
-    c['builders'].append(util.BuilderConfig(name=ds.id, workernames=["worker"], factory=ds.builder))
+    c['builders'].append(util.BuilderConfig(
+        name=ds.id,
+        workernames=["worker"],
+        factory=ds.builder))
 
 ####### BUILDBOT SERVICES
 
@@ -260,7 +263,7 @@ c['titleURL'] = "https://github.com/cldf/cldf-buildbot"
 # the 'www' entry below, but with an externally-visible host name which the
 # buildbot cannot figure out without some help.
 
-c['buildbotURL'] = "http://{0}:8010/".format(settings.HOST)
+c['buildbotURL'] = settings.URL
 
 
 def status_view(org, app):

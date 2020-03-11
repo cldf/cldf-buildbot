@@ -1,1 +1,1 @@
-HOST = 'localhost'
+URL = 'http://localhost:8010'
