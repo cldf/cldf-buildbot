@@ -69,7 +69,7 @@ class Dataset:
         ))
         factory.addStep(self.shell_command(
             'install pycldf',
-            ["pip", '--cache-dir', '../.cache', "install", "wheel", "pycldf"],
+            ["pip", '--cache-dir', '../.cache', "install", "pycldf[catalogs]"],
             haltOnFailure=True,
         ))
 
