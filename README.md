@@ -1,7 +1,6 @@
 # cldf-buildbot
 
-[Buildbot](http://buildbot.net/) configuration to provide CI for 
-[cldfbench](https://github.com/cldf/cldfbench) curated datasets.
+[Buildbot](http://buildbot.net/) configuration to provide CI for CLDF datasets.
 
 
 ## Install and deploy
@@ -48,6 +47,16 @@ The UI of Buildbot is served at http://localhost:8010
 * select "release" builder
 * click "force" button on top right
 * will trigger builds of all other repos
+
+
+## Updating the repository list
+
+The [repository list](reposlist.json) is used to create builder specifications when the buildbot
+[config](config.py) is read. It can be recreated - looking up relevant repositories on GitHub - by
+running
+```
+python reposlist.py GITHUB_ACCESS_TOKEN
+```
 
 
 ## TODO:
