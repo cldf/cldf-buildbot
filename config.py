@@ -38,7 +38,7 @@ class Dataset:
         return steps.ShellCommand(
             command=[self.venv_cmd(cmd[0])] + cmd[1:],
             workdir="build",
-            env={"PYTHONPATH": "."},
+            env={"PYTHONPATH": ".", "PYTHONWARNINGS": "ignore:DEPRECATION"},
             logEnviron=False,
             name=name,
             **kw)
