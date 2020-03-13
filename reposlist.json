@@ -282,6 +282,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/bowerntasmanian.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/bremerberta.git",
         [
             "cldf/cldf-metadata.json"
@@ -363,6 +371,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/csd.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/davletshinaztecan.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -554,6 +570,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/nashcolorterms.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/northeuralex.git",
         [
             "cldf/cldf-metadata.json"
@@ -603,6 +627,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/sawkatokaleya.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/sndcmpmapudungun.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -667,6 +699,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/uralex.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/walkerarawakan.git",
         [
             "cldf/cldf-metadata.json"
         ],
