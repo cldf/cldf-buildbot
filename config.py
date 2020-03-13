@@ -138,13 +138,21 @@ class Dataset:
                 decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                 warnOnWarnings=True,
             ))
-            # if self.cldfbench_curator == 'lexibank':
-            #    factory.addStep(self.shell_command(
-            #        'lexibank check',
-            #        ["cldfbench", "--log-level", "WARN", "lexibank.check", self.name],
-            #        decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
-            #        warnOnWarnings=True,
-            #    ))
+            if self.cldfbench_curator == 'lexibank':
+               factory.addStep(self.shell_command(
+                   'lexibank check',
+                   [
+                       "cldfbench",
+                       "--log-level",
+                       "WARN",
+                       "lexibank.check",
+                       self.name,
+                       '--entry-point',
+                       self.entry_point,
+                   ],
+                   decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                   warnOnWarnings=True,
+               ))
             factory.addStep(self.shell_command(
                 'cldfbench diff',
                 [
