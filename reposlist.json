@@ -450,6 +450,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/hayniecolorterms.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/hubercolumbian.git",
         [
             "cldf/cldf-metadata.json"
