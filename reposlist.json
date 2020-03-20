@@ -82,14 +82,6 @@
     ],
     [
         "cldf-datasets",
-        "https://github.com/cldf-datasets/phonotactics.git",
-        [
-            "cldf/StructureDataset-metadata.json"
-        ],
-        "cldfbench"
-    ],
-    [
-        "cldf-datasets",
         "https://github.com/cldf-datasets/sails.git",
         [
             "cldf/StructureDataset-metadata.json"
@@ -714,6 +706,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/valpal.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/walkerarawakan.git",
         [
             "cldf/cldf-metadata.json"
@@ -731,6 +731,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/wangbcd.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/wanghmongmien.git",
         [
             "cldf/cldf-metadata.json"
         ],
