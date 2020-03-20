@@ -13,7 +13,7 @@ import pathlib
 
 from github import Github, GithubException
 
-ORGS = ['lexibank', 'cldf-datasets', 'dictionaria']
+ORGS = ['lexibank', 'numeralbank', 'cldf-datasets', 'dictionaria']
 
 
 def cldfbench_curated(repo):
