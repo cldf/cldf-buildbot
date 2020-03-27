@@ -158,6 +158,7 @@ class Dataset:
                 [
                     "cldfbench",
                     "diff",
+                    "--verbose",
                     self.name,
                     '--entry-point',
                     self.entry_point,
