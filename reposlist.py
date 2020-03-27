@@ -13,11 +13,18 @@ import pathlib
 
 from github import Github, GithubException
 
-ORGS = ['lexibank', 'numeralbank', 'cldf-datasets', 'dictionaria']
+ORGS = [
+    'lexibank',
+    'numeralbank',
+    'cldf-datasets',
+    'dictionaria',
+    'intercontinental-dictionary-series',
+]
 
 
 def cldfbench_curated(repo):
-    curator_pattern = re.compile(r"""["'](?P<curator>lexibank|cldfbench)\.dataset["']""")
+    curator_pattern = re.compile(
+        r"""["'](?P<curator>lexibank|cldfbench|international-dictionary-series)\.dataset["']""")
     for f in repo.get_contents('.'):
         if f.name == 'setup.py':
             match = curator_pattern.search(base64.b64decode(f.content).decode('utf8'))

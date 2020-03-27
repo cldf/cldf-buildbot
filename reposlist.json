@@ -634,14 +634,6 @@
     ],
     [
         "lexibank",
-        "https://github.com/lexibank/sndcmpmapudungun.git",
-        [
-            "cldf/cldf-metadata.json"
-        ],
-        "lexibank"
-    ],
-    [
-        "lexibank",
         "https://github.com/lexibank/sohartmannchin.git",
         [
             "cldf/cldf-metadata.json"
