@@ -287,7 +287,7 @@ def status_view(org, app):
 
     builders = []
     for builder in app.buildbot_api.dataGet("/builders"):
-        if builder['name'].startswith('release'):
+        if builder['name'].startswith('release') or not builder['masterids']:
             continue
         ds = UIDataset(builder)
         if ds.org == org:
