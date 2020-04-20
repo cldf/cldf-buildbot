@@ -193,6 +193,22 @@
         null
     ],
     [
+        "intercontinental-dictionary-series",
+        "https://github.com/intercontinental-dictionary-series/lindseyende.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/aaleykusunda.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
         "lexibank",
         "https://github.com/lexibank/abrahammonpa.git",
         [
@@ -514,6 +530,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/leekoreanic.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/lieberherrkhobwa.git",
         [
             "cldf/cldf-metadata.json"
@@ -531,6 +555,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/logos.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/lundgrenomagoa.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -586,6 +618,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/polyglottaafricana.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/powerma.git",
         [
             "cldf/cldf-metadata.json"
@@ -634,6 +674,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/simsrma.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/sohartmannchin.git",
         [
             "cldf/cldf-metadata.json"
@@ -667,6 +715,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/tls.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/tolmiebritishcolumbia.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -771,6 +827,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/zgraggenmadang.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/zhangrgyalrong.git",
         [
             "cldf/cldf-metadata.json"
         ],
