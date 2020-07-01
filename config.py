@@ -100,7 +100,7 @@ class Dataset:
                 'makecldf',
                 [
                     "cldfbench",
-                    ('lexibank.' if self.org == 'lexibank' else '') + 'makecldf',
+                    ('lexibank.' if self.org == 'lexibank' or self.org == 'numeralbank' else '') + 'makecldf',
                     self.name,
                 ] + catalogs))
             # run tests
