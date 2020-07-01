@@ -9,6 +9,14 @@
     ],
     [
         "cldf-datasets",
+        "https://github.com/cldf-datasets/apics.git",
+        [
+            "cldf/StructureDataset-metadata.json"
+        ],
+        "cldfbench"
+    ],
+    [
+        "cldf-datasets",
         "https://github.com/cldf-datasets/audersetinterrog.git",
         [
             "cldf/StructureDataset-metadata.json"
@@ -34,6 +42,14 @@
     [
         "cldf-datasets",
         "https://github.com/cldf-datasets/easterdaysyllablestructure.git",
+        [
+            "cldf/StructureDataset-metadata.json"
+        ],
+        "cldfbench"
+    ],
+    [
+        "cldf-datasets",
+        "https://github.com/cldf-datasets/eurasianinventories.git",
         [
             "cldf/StructureDataset-metadata.json"
         ],
@@ -95,6 +111,14 @@
             "cldf/StructureDataset-metadata.json"
         ],
         null
+    ],
+    [
+        "cldf-datasets",
+        "https://github.com/cldf-datasets/tangclassifiers.git",
+        [
+            "cldf/StructureDataset-metadata.json"
+        ],
+        "cldfbench"
     ],
     [
         "cldf-datasets",
@@ -228,6 +252,7 @@
         "lexibank",
         "https://github.com/lexibank/allenbai.git",
         [
+            "cldf/StructureDataset-metadata.json",
             "cldf/cldf-metadata.json"
         ],
         "lexibank"
@@ -243,6 +268,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/bantubvd.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/bdpa.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -354,14 +387,6 @@
     ],
     [
         "lexibank",
-        "https://github.com/lexibank/channumerals.git",
-        [
-            "cldf/cldf-metadata.json"
-        ],
-        "lexibank"
-    ],
-    [
-        "lexibank",
         "https://github.com/lexibank/chenhmongmien.git",
         [
             "cldf/cldf-metadata.json"
@@ -386,7 +411,23 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/dagloans.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/davletshinaztecan.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/deepadungpalaung.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -434,14 +475,6 @@
     ],
     [
         "lexibank",
-        "https://github.com/lexibank/googleuninum.git",
-        [
-            "cldf/cldf-metadata.json"
-        ],
-        "lexibank"
-    ],
-    [
-        "lexibank",
         "https://github.com/lexibank/grollemundbantu.git",
         [
             "cldf/cldf-metadata.json"
@@ -451,6 +484,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/halenepal.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/hantganbangime.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -570,6 +611,14 @@
     ],
     [
         "lexibank",
+        "https://github.com/lexibank/mannburmish.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
         "https://github.com/lexibank/marrisonnaga.git",
         [
             "cldf/cldf-metadata.json"
@@ -611,6 +660,14 @@
     [
         "lexibank",
         "https://github.com/lexibank/northeuralex.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/pharaocoracholaztecan.git",
         [
             "cldf/cldf-metadata.json"
         ],
@@ -835,6 +892,30 @@
     [
         "lexibank",
         "https://github.com/lexibank/zhangrgyalrong.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "lexibank",
+        "https://github.com/lexibank/zhaobai.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "numeralbank",
+        "https://github.com/numeralbank/channumerals.git",
+        [
+            "cldf/cldf-metadata.json"
+        ],
+        "lexibank"
+    ],
+    [
+        "numeralbank",
+        "https://github.com/numeralbank/googleuninum.git",
         [
             "cldf/cldf-metadata.json"
         ],
