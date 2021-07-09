@@ -153,6 +153,37 @@ class Dataset:
                    decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                    warnOnWarnings=True,
                ))
+
+               factory.addStep(self.shell_command(
+                   'lexibank profile check',
+                   [
+                       "cldfbench",
+                       "--log-level",
+                       "WARN",
+                       "lexibank.check_profile",
+                       self.name,
+                       '--entry-point',
+                       self.entry_point,
+                   ],
+                   decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                   warnOnWarnings=True,
+               ))
+
+               factory.addStep(self.shell_command(
+                   'lexibank phonotactics check',
+                   [
+                       "cldfbench",
+                       "--log-level",
+                       "WARN",
+                       "lexibank.check_phonotactics",
+                       self.name,
+                       '--entry-point',
+                       self.entry_point,
+                   ],
+                   decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
+                   warnOnWarnings=True,
+               ))
+
             factory.addStep(self.shell_command(
                 'cldfbench diff',
                 [
