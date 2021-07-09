@@ -164,6 +164,8 @@ class Dataset:
                        self.name,
                        '--entry-point',
                        self.entry_point,
+                       '--clts',
+                       str(pathlib.Path(__file__).parent.parent.joinpath('clts').resolve()),
                    ],
                    decodeRC={0: results.SUCCESS, 2: results.WARNINGS},
                    warnOnWarnings=True,
