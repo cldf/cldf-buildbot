@@ -189,7 +189,7 @@ c['buildbotNetUsageData'] = None
 # The 'workers' list defines the set of recognized workers. Each element is
 # a Worker object, specifying a unique worker name and password.  The same
 # worker name and password must be configured on the worker.
-c['workers'] = [worker.Worker("worker", "pass", max_builds=3)]
+c['workers'] = [worker.Worker("worker", "pass", max_builds=2)]
 
 # 'protocols' contains information about protocols which master will use for
 # communicating with workers. You must define at least 'port' option that workers
